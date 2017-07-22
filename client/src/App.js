@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import 'whatwg-fetch';
 
 class App extends Component {
   render() {
+    fetch('/api').then((response) => {console.log(response)});
+
     return (
       <div className="App">
         <div className="App-header">

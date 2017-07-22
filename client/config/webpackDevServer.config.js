@@ -77,6 +77,9 @@ module.exports = function(proxy, allowedHost) {
       // See https://github.com/facebookincubator/create-react-app/issues/387.
       disableDotRule: true,
     },
+    proxy: {
+      "/api": "http://localhost:8080"
+    },
     public: allowedHost,
     proxy,
     setup(app) {

@@ -28,10 +28,11 @@ function sendSms(number, body) {
     }).then((message) => console.log(message.sid));
 }
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     var number = '+447402103030';
-    console.log('sending message to ${number}');
-    sendSms(number, 'Hello world');
+    console.log('request!')
+    // console.log('sending message to ${number}');
+    // sendSms(number, 'Hello world');
     res.status(200).send('Hello, world!').end();
 });
 

@@ -9,7 +9,9 @@
     },
     "scripts": {
         "deploy": "gcloud app deploy",
-        "start": ". ./secrets.inc; node app.js",
+        "start": "concurrently 'npm run server' 'npm run client'",
+        "server": ". ./secrets.inc; node app.js",
+        "client": "cd client && npm start",
         "lint": "samples lint",
         "pretest": "npm run lint"
     },
@@ -18,6 +20,7 @@
         "twilio": "3.5.0"
     },
     "devDependencies": {
-        "@google-cloud/nodejs-repo-tools": "1.4.15"
+        "@google-cloud/nodejs-repo-tools": "1.4.15",
+        "concurrently": "3.5.0"
     }
 }
