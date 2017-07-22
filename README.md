@@ -46,6 +46,8 @@ Then,
 
 Things I've cut corners on:
 
+- No SSL :|
+
 - Sends SMS from a single fixed number. This won't scale. Should either use
   Twilio's availableNumbers API directly, or a queueing service like Copilot, to
   diversify source numbers.
