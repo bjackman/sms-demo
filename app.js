@@ -31,6 +31,12 @@ function sendSms(number, body) {
 
 app.use(bodyParser.json());
 
+// In dev the client is compiled and served by webpack-dev-server. In prod, it's
+// served by Express.
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+}
+
 app.post('/api', (req, res) => {
   console.log('request!');
   const params = req.body;
