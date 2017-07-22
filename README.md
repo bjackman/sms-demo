@@ -41,8 +41,6 @@ Then,
 - npm install
 - npm start
 
-You also need to run `vagrant rsync-auto` in another shell if you want to edit
-the files live from your host -_-
 
 ## TODOs
 
