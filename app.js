@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+// Only supprt UK phone numbers at the moment
 const LOCALE = 'GB';
 
 // If we don't have the env vars we need, crash now instead of later.
@@ -18,7 +19,7 @@ const twilioClient = new twilio(
 );
 console.log('Twilio client setup done.');
 
-function sendSms(number, body) {
+function sendSms(number, body, callback) {
   twilioClient.messages.create({
     to: number,
     // TODO: Using a fixed source number won't scale, because apparently if
@@ -26,7 +27,7 @@ function sendSms(number, body) {
     // https://www.twilio.com/docs/api/rest/sending-messages-copilot
     from: process.env.TWILIO_SOURCE_NUMBER,
     body: body
-  }).then((message) => console.log(message.sid));
+  }).then((result) => callback(result));
 }
 
 app.use(bodyParser.json());
@@ -40,8 +41,13 @@ if (process.env.NODE_ENV === "production") {
 app.post('/api/registerPhoneNumber', (req, res) => {
   console.log('request!');
   const params = req.body;
-  sendSms(params.phoneNumber, 'Thanks for subscribing to cat facts!');
-  res.status(200).send('Hello, world!').end();
+  const msg = 'Thanks for subscribing to cat facts!'
+
+  sendSms(params.phoneNumber, msg, (result) => {
+    console.log(result);
+    res.status(200).send(result.sid).end();
+  });
+
 });
 
 const PORT = process.env.PORT || 8080;
