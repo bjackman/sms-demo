@@ -77,11 +77,13 @@ module.exports = function(proxy, allowedHost) {
       // See https://github.com/facebookincubator/create-react-app/issues/387.
       disableDotRule: true,
     },
-    proxy: {
-      "/api": "http://localhost:8080"
-    },
     public: allowedHost,
-    proxy,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        secure: false
+      }
+    },
     setup(app) {
       // This lets us open files from the runtime error overlay.
       app.use(errorOverlayMiddleware());
