@@ -34,7 +34,7 @@ class App extends Component {
   }
 
   render() {
-    const countryError = this.state.country != 'GB' ?
+    const countryError = this.state.country !== 'GB' ?
           'Sorry, only United Kingdom phone numbers are supported' : ''
 
     const buttonText = isValidNumber(this.state.phoneNumber) && !countryError ?
