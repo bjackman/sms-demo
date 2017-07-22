@@ -9,7 +9,8 @@
   },
   "scripts": {
     "deploy": "gcloud app deploy",
-    "start": "concurrently 'npm run server' 'npm run client'",
+    "start": "npm run server",
+    "start-dev": "concurrently 'npm run server' 'npm run client'",
     "server": ". ./secrets.inc; node app.js",
     "client": "cd client && npm start",
     "lint": "samples lint",
