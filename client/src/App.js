@@ -81,7 +81,7 @@ class PhoneSubmitter extends Component {
         </div>
         <RaisedButton disabled={!readyToSend}
                       value={this.state.phoneNumber}
-                      primary="true"
+                      primary={true}
                       onTouchTap={this.handleSubmit}
                       label={buttonText} />
       </div>
