@@ -12,17 +12,25 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      phoneNumber: '',
+      phoneNumber: '+447402103030', // TODO remove this!
       country: 'GB'
     }
+
+    this.handleChangeNumber = this.handleChangeNumber.bind(this);
+    this.handleChangeCountry = this.handleChangeCountry.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(value) {
+  handleChangeNumber(value) {
     this.setState({phoneNumber: value});
   }
 
-  handleCountryChange(value) {
+  handleChangeCountry(value) {
     this.setState({country: value});
+  }
+
+  handleSubmit(event) {
+    fetch('/api').then((response) => console.log(response));
   }
 
   render() {
@@ -32,24 +40,26 @@ class App extends Component {
     const buttonText = isValidNumber(this.state.phoneNumber) && !countryError ?
           'Send SMS to ' + formatNumber(this.state.phoneNumber, 'GB', 'International') :
           'Enter valid number to send SMS'
+            // This prop doesn't seem to be documented, I found it in the
+            // react-phone-number-input source code :|
 
     return (
       <div className="App">
-        <div className="Phone-container">
+        <form onSubmit={this.handleSubmit}>
           <Phone
             country={this.state.country}
             placeholder="Enter phone number"
             value={this.state.phoneNumber}
-            onChange={value => this.handleChange(value)}
-            onCountryChange={value => this.handleCountryChange(value)}
-          />
-        </div>
-        <div className="country-error">
-          <p> {countryError} </p>
-        </div>
-        <button disabled={!isValidNumber(this.state.phoneNumber)}>
-          {buttonText}
-        </button>
+            onChange={value => this.handleChangeNumber(value)}
+            onCountryChange={value => this.handleChangeCountry(value)} />
+          <div className="country-error">
+            <p> {countryError} </p>
+          </div>
+          <button disabled={!isValidNumber(this.state.phoneNumber)}
+                  value={this.state.phoneNumber}>
+            {buttonText}
+          </button>
+        </form>
       </div>
     );
   }
