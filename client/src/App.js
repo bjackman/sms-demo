@@ -52,6 +52,9 @@ class PhoneSubmitter extends Component {
     this.setState({country: value});
   }
 
+  // Callback for when the submit button is pressed.
+  // Sends reg request to backend and throws up a loading spinner, then clears
+  // the UI once we get a response from the backend.
   handleSubmit(event) {
     fetch('/api/registerPhoneNumber', {
       method: 'POST',
