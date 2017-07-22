@@ -11,6 +11,15 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 8080, host: 8080, host_ip: "127.0.0.1"
   config.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "127.0.0.1"
 
+  # Webpack (inotify-watch type thing React uses to auto-reload code) doesn't
+  # work with vboxsfs so use rsync instead.
+  # Sorry, if you have any broke symlinks lying around, Vagrant & rsync are
+  # going to be total dicks about it. Delete them (the broken symlinks, I
+  # mean...).
+  #
+  # You'll need to run 'vagrant rsync-auto' in another shell to get this to work.
+  #
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync_auto: true, rsync_exclude: ".git/"
 
   config.vm.provision "shell", inline: <<-SHELL
     curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
