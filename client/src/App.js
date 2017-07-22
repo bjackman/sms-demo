@@ -30,7 +30,9 @@ const machineStates = {
 
 class PhoneSubmitter extends Component {
   constructor(props) {
+
     super(props);
+
     this.state = {
       phoneNumber: '',
       country: 'GB',
