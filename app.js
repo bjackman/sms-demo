@@ -1,7 +1,8 @@
 'use strict';
 
 const express = require('express');
-const twilio = require('twilio')
+const twilio = require('twilio');
+const bodyParser = require('body-parser');
 
 const app = express();
 
@@ -28,11 +29,12 @@ function sendSms(number, body) {
   }).then((message) => console.log(message.sid));
 }
 
+app.use(bodyParser.json());
+
 app.post('/api', (req, res) => {
-  var number = '+447402103030';
-  console.log('request!')
-  // console.log('sending message to ${number}');
-  // sendSms(number, 'Hello world');
+  console.log('request!');
+  const params = req.body;
+  sendSms(params.phoneNumber, 'Thanks for subscribing to cat facts!');
   res.status(200).send('Hello, world!').end();
 });
 

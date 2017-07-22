@@ -30,7 +30,13 @@ class App extends Component {
   }
 
   handleSubmit(event) {
-    fetch('/api').then((response) => console.log(response));
+    fetch('/api', {
+      method: 'POST',
+      body: JSON.stringify(this.state),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then((response) => console.log(response));
   }
 
   render() {
