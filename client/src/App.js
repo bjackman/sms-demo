@@ -52,14 +52,21 @@ class PhoneSubmitter extends Component {
   }
 
   render() {
+    // We're using an international phone number component because when this
+    // Killer App is launched we'll want international support from the get-go,
+    // but for now our Twilio account only services UK numbers.
     const countryError = this.state.country !== 'GB' ?
-          'Sorry, only United Kingdom phone numbers are supported' : ''
+          'Sorry, only United Kingdom phone numbers are currently supported' : ''
 
-    const buttonText = isValidNumber(this.state.phoneNumber) && !countryError ?
-          'Send SMS to ' + formatNumber(this.state.phoneNumber, 'GB', 'International') :
+    // We're gona disable the submit button until we've got a valid phone number.
+    // Also change the button label.
+    const readyToSend = isValidNumber(this.state.phoneNumber) && !countryError;
+    const buttonText =  readyToSend ?
+          'Send SMS to ' + formatNumber(this.state.phoneNumber, 'GB', 'National') :
           'Enter valid number to send SMS'
-            // This prop doesn't seem to be documented, I found it in the
-            // react-phone-number-input source code :|
+
+    // NB: the onCountryChange prop below doesn't seem to be documented, but I
+    // found it in the source code for the component :/
 
     return (
       <div className="PhoneSubmitter">
@@ -72,7 +79,7 @@ class PhoneSubmitter extends Component {
         <div className="country-error">
           <p> {countryError} </p>
         </div>
-        <RaisedButton disabled={!isValidNumber(this.state.phoneNumber)}
+        <RaisedButton disabled={!readyToSend}
                       value={this.state.phoneNumber}
                       primary="true"
                       onTouchTap={this.handleSubmit}
