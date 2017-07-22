@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
 
-app.post('/api', (req, res) => {
+app.post('/api/registerPhoneNumber', (req, res) => {
   console.log('request!');
   const params = req.body;
   sendSms(params.phoneNumber, 'Thanks for subscribing to cat facts!');

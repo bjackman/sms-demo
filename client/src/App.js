@@ -42,7 +42,7 @@ class PhoneSubmitter extends Component {
   }
 
   handleSubmit(event) {
-    fetch('/api', {
+    fetch('/api/registerPhoneNumber', {
       method: 'POST',
       body: JSON.stringify(this.state),
       headers: {
