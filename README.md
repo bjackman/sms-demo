@@ -62,3 +62,6 @@ Things I've cut corners on:
   by create-react-app) don't have a way to configure that, so I did 'npm eject'
   to allow me to tweak webpack. That means I won't easily get updates to
   react-scripts stuff.
+
+- Ignoring a webpack warning apparently caused by libphonenumber-js using a
+  deprecated JSON loader.
