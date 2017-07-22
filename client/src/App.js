@@ -12,7 +12,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      phoneNumber: '+447402103030', // TODO remove this!
+      phoneNumber: '',
       country: 'GB'
     }
 
