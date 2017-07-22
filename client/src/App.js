@@ -51,7 +51,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <form onSubmit={this.handleSubmit}>
+        <form action="#" onSubmit={this.handleSubmit}>
           <Phone
             country={this.state.country}
             placeholder="Enter phone number"
