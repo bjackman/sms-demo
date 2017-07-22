@@ -6,9 +6,21 @@ import Phone from 'react-phone-number-input'
 import 'react-phone-number-input/rrui.css';
 import 'react-phone-number-input/style.css';
 
+import injectTapEventPlugin from 'react-tap-event-plugin';
+
+import RaisedButton from 'material-ui/RaisedButton';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import {isValidNumber, format as formatNumber} from 'libphonenumber-js';
 
-class App extends Component {
+// Needed for material-ui's onTouchTap
+// http://stackoverflow.com/a/34015469/988941
+injectTapEventPlugin();
+
+const muiTheme = getMuiTheme();
+
+class PhoneSubmitter extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -50,25 +62,34 @@ class App extends Component {
             // react-phone-number-input source code :|
 
     return (
-      <div className="App">
-        <form action="#" onSubmit={this.handleSubmit}>
-          <Phone
-            country={this.state.country}
-            placeholder="Enter phone number"
-            value={this.state.phoneNumber}
-            onChange={value => this.handleChangeNumber(value)}
-            onCountryChange={value => this.handleChangeCountry(value)} />
-          <div className="country-error">
-            <p> {countryError} </p>
-          </div>
-          <button disabled={!isValidNumber(this.state.phoneNumber)}
-                  value={this.state.phoneNumber}>
-            {buttonText}
-          </button>
-        </form>
+      <div className="PhoneSubmitter">
+        <Phone
+          country={this.state.country}
+          placeholder="Enter phone number"
+          value={this.state.phoneNumber}
+          onChange={value => this.handleChangeNumber(value)}
+          onCountryChange={value => this.handleChangeCountry(value)} />
+        <div className="country-error">
+          <p> {countryError} </p>
+        </div>
+        <RaisedButton disabled={!isValidNumber(this.state.phoneNumber)}
+                      value={this.state.phoneNumber}
+                      primary="true"
+                      onTouchTap={this.handleSubmit}
+                      label={buttonText} />
       </div>
     );
   }
+}
+
+function App(props) {
+  return (
+    <MuiThemeProvider muiTheme={muiTheme}>
+      <div className="App">
+        <PhoneSubmitter />
+      </div>
+    </MuiThemeProvider>
+  );
 }
 
 export default App;
