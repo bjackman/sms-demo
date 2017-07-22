@@ -1,26 +1,27 @@
 {
-    "name": "interview-sms-demo",
-    "description": "Dummy app to register and verify a phone number",
-    "version": "0.0.1",
-    "private": true,
-    "author": "Brendan Jackman",
-    "engines": {
-        "node": ">=4.3.2"
-    },
-    "scripts": {
-        "deploy": "gcloud app deploy",
-        "start": "concurrently 'npm run server' 'npm run client'",
-        "server": ". ./secrets.inc; node app.js",
-        "client": "cd client && npm start",
-        "lint": "samples lint",
-        "pretest": "npm run lint"
-    },
-    "dependencies": {
-        "express": "4.15.3",
-        "twilio": "3.5.0"
-    },
-    "devDependencies": {
-        "@google-cloud/nodejs-repo-tools": "1.4.15",
-        "concurrently": "3.5.0"
-    }
+  "name": "interview-sms-demo",
+  "description": "Dummy app to register and verify a phone number",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Brendan Jackman",
+  "engines": {
+    "node": ">=4.3.2"
+  },
+  "scripts": {
+    "deploy": "gcloud app deploy",
+    "start": "concurrently 'npm run server' 'npm run client'",
+    "server": ". ./secrets.inc; node app.js",
+    "client": "cd client && npm start",
+    "lint": "samples lint",
+    "pretest": "npm run lint"
+  },
+  "dependencies": {
+    "express": "4.15.3",
+    "twilio": "3.5.0",
+
+  },
+  "devDependencies": {
+    "@google-cloud/nodejs-repo-tools": "1.4.15",
+    "concurrently": "3.5.0"
+  }
 }
