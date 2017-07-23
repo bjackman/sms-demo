@@ -233,6 +233,7 @@ class App extends Component {
     case appStates.NO_USER:
       component = (
         <div classname='request-google-auth'>
+          <p>Login with Google to start using Cat Facts!</p>
           <GoogleLogin
               clientId={GOOGLE_CLIENT_ID}
               buttonText="Login with Google"
@@ -242,12 +243,17 @@ class App extends Component {
       );
       break;
     case appStates.FETCHING_USER:
-      component = <CircularProgress />
+      component = (
+        <div>
+          <p>Fetching user info from server</p>
+          <CircularProgress />
+        </div>
+      );
       break;
     case appStates.NEED_REGISTER:
       component = (
           <div className='register-user'>
-            <p>Enter your phone number to register for cat facts!</p>
+            <p>Enter your phone number to register for Cat Facts!</p>
               <PhoneSubmitter googleUser={this.state.googleUser}
                               onCompleted={this.fetchCatFactsUser}/>
           </div>
