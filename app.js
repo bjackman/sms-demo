@@ -80,7 +80,7 @@ function verifyGoogleIdToken(token, callback) {
 // Query the data store for a phone number, call th callback with the phone
 // number or null if it wasn't found.
 // TODO: Assumes that we haven't messed up the DB by storing two entities
-//       with hte same googleUserId.  Presumably the DB tech has a way to make
+//       with the same googleUserId.  Presumably the DB tech has a way to make
 //       that impossible (use googleUserId a key?). Should do that. Would
 //       probably result in a faster index too.
 function getUserPhoneNumber(googleUserId, callback) {
