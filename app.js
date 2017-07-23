@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const GoogleAuth = require('google-auth-library');
 const Datastore = require('@google-cloud/datastore');
 const bearerToken = require('express-bearer-token');
+const catFacts = require('cat-facts');
 
 const app = express();
 
@@ -178,10 +179,33 @@ app.post('/api/registerPhoneNumber', (req, res) => {
   });
 });
 
+app.post('/api/sendFact', (req, res) => {
+  if (!req.token) {
+    res.status(401).send('Need to authorize with Google').end();
+    return;
+  }
+
+  // TODO: Too many callbacks. Refactor this with a flow control library?
+  verifyGoogleIdToken(req.token, function(googleUserId) {
+    if (!googleUserId) {
+      res.status(500).send("Couldn't get Google User ID").end();
+      return;
+    } else {
+      getUserPhoneNumber(googleUserId, ((phoneNumber) => {
+        if (phoneNumber) {
+          const fact = catFacts.random()
+          sendSms(phoneNumber, fact);
+          res.status(200).send(fact).end();
+        } else {
+          res.status(404).send('User not found').end();
+        }
+      }));
+    }
+  })
+});
+
 app.get('/api/me', (req, res) => {
   const googleIdToken = req.body.googleIdToken;
-
-  console.log(req.token);
 
   if (!req.token) {
     res.status(401).send('Need to authorize with Google').end();

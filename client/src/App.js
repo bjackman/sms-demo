@@ -153,6 +153,7 @@ class App extends Component {
 
     this.handleGoogleSuccess = this.handleGoogleSuccess.bind(this);
     this.handleGoogleFailure = this.handleGoogleFailure.bind(this);
+    this.handleSendFact = this.handleSendFact.bind(this);
     this.fetchCatFactsUser = this.fetchCatFactsUser.bind(this);
   }
 
@@ -167,6 +168,26 @@ class App extends Component {
   handleGoogleSuccess(googleUser) {
     this.setState({googleUser: googleUser});
     this.fetchCatFactsUser();
+  }
+
+  handleSendFact() {
+    if (!this.state.catFactsUser) {
+      console.log('Got handleSendFact too early');
+      return;
+    }
+
+    fetch('/api/sendFact', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + this.state.googleUser.tokenId
+      }
+    }).then((response) => {
+      if (response.ok)
+        console.log('sent a fact');
+      else
+        console.log(response);
+    });
   }
 
   fetchCatFactsUser() {

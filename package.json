@@ -22,7 +22,8 @@
     "body-parser": "1.17.2",
     "googleapis": "20.1.0",
     "@google-cloud/datastore": "1.0.2",
-    "express-bearer-token": "2.1.0"
+    "express-bearer-token": "2.1.0",
+    "cat-facts" : "1.0.2"
   },
   "devDependencies": {
     "@google-cloud/nodejs-repo-tools": "1.4.15",
