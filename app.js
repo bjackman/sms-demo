@@ -6,6 +6,7 @@ const twilio = require('twilio');
 const bodyParser = require('body-parser');
 const GoogleAuth = require('google-auth-library');
 const Datastore = require('@google-cloud/datastore');
+const bearerToken = require('express-bearer-token');
 
 const app = express();
 
@@ -136,6 +137,7 @@ function setUserPhoneNumber(googleUserId, phoneNumber) {
  */
 
 app.use(bodyParser.json());
+app.use(bearerToken());
 
 // In dev the client is compiled and served by webpack-dev-server. In prod, it's
 // served by Express.
@@ -145,6 +147,9 @@ if (process.env.NODE_ENV === "production") {
 
 app.post('/api/registerPhoneNumber', (req, res) => {
   var googleIdToken, phoneNumber;
+
+  // TODO: Move ID token to Authorization header instead of body?
+  //       Does it matter?
 
   // Validate request.
   // If this validation becomes nontrivial, something like
@@ -161,13 +166,43 @@ app.post('/api/registerPhoneNumber', (req, res) => {
   const params = req.body;
   const msg = 'Thanks for subscribing to cat facts!'
 
-  verifyGoogleIdToken(googleIdToken, function(userId) {
-    if (!userId)
+  verifyGoogleIdToken(googleIdToken, function(googleUserId) {
+    if (!googleUserId)
       res.status(500).send("Couldn't get Google User ID").end();
-    else
+    else {
       sendSms(phoneNumber, msg, (result) => {
         res.status(200).send(result.sid).end();
       });
+      setUserPhoneNumber(googleUserId, phoneNumber);
+    }
+  });
+});
+
+app.get('/api/me', (req, res) => {
+  const googleIdToken = req.body.googleIdToken;
+
+  console.log(req.token);
+
+  if (!req.token) {
+    res.status(401).send('Need to authorize with Google').end();
+    return;
+  }
+
+  // TODO: Too many callbacks. Refactor this with a flow control library?
+  verifyGoogleIdToken(req.token, function(googleUserId) {
+    if (!googleUserId) {
+      res.status(500).send("Couldn't get Google User ID").end();
+      return;
+    } else {
+      getUserPhoneNumber(googleUserId, ((phoneNumber) => {
+        if (phoneNumber) {
+          const user = {googleUserId: googleUserId, phoneNumber: phoneNumber};
+          res.status(200).send(JSON.stringify(user)).end();
+        } else {
+          res.status(404).send('User not found').end();
+        }
+      }));
+    }
   });
 });
 
