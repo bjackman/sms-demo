@@ -209,6 +209,7 @@ class App extends Component {
       }
     }).then((response) => {
       response.text().then((text) => {
+        console.log(response);
         if (response.ok)
           this.setState({
             catFactsUser: JSON.parse(text),
@@ -232,7 +233,7 @@ class App extends Component {
     switch (this.state.machineState) {
     case appStates.NO_USER:
       component = (
-        <div classname='request-google-auth'>
+        <div className='request-google-auth'>
           <p>Login with Google to start using Cat Facts!</p>
           <GoogleLogin
               clientId={GOOGLE_CLIENT_ID}
