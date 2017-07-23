@@ -39,7 +39,12 @@ function sendSms(number, body, callback) {
     // https://www.twilio.com/docs/api/rest/sending-messages-copilot
     from: process.env.TWILIO_SOURCE_NUMBER,
     body: body
-  }).then((result) => callback(result));
+  }).then((result) => {
+    console.log(result);
+    callback(result)
+  }).catch((err) => {
+    console.log(err)
+  });
 }
 
 /*
