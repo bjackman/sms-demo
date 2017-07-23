@@ -60,6 +60,9 @@ To run locally, `npm start`. This:
 - On another port, starts a webpack server which serves (and live-updates) the
   client while proxying back-end API requests to the server port.
 
+You can also start the separately with 'npm run server' in one shell and '(cd
+client; npm start)' in another.
+
 To deploy it to App Engine (takes 10/15 mins):
 
 - Set up the `gcloud` SDK tool
