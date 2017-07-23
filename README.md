@@ -24,6 +24,8 @@ term as as far as I can tell it totally locks you into the Google platform.
 Authentication is also handled totally via Google. This app's notion of a 'user'
 is just a tuple tying a phone number to a Google user ID.
 
+Facts: The facts themselves come from https://github.com/vadimdemedes/cat-facts
+
 ### Learning Resources
 
 For how to use React:
@@ -91,24 +93,29 @@ which, when submitted, makes a registration request to the back-end API.
 
 ### API
 
-There are three endpoints:
+There are three endpoints. Where it's required, authentication is done by
+setting an Authorization header to "Bearer <token>" where <token> is the Google
+ID token.
 
-- POST to /api/registerPhoneNumber. Body must be JSON like `{phoneNumber: foo,
+- POST to /api/registerPhoneNumber. Register a new user.
+
+  Body must be JSON like `{phoneNumber: foo,
   googleIdToken: bar}`. The Google ID token (which should be a standard JWT) is
   validated and a confirmation text is sent to `foo`. All the other details than
   the phone number (like the locale) are hard-coded. The Google User ID
   assocated with the token is then stored in the database along with the
   registered phone number.
 
-  Once you're registered, for subsequent requests you'll need to set an
-  Authorization header to "Bearer <token>" where <token> is the Google ID token.
+- GET /api/me. (requires auth). Get the currently authenticated user.
 
-- GET /api/me. Returns {googleUserId: foo, phoneNumber: bar}
+  Returns {googleUserId: foo, phoneNumber: bar}
 
-- POST to /api/sendFact. Sends a cat fact to the registered SMS number for the
-  auth'd user. Also happens to return the fact in the response body. (But nobody
-  wants to read cat facts over HTTP. Just wait for it to arrive on your
-  phone via SMS. Much better.)
+- POST to /api/sendFact. (requires auth). Send fascinating cat fact.
+
+  Sends a cat fact to the registered SMS number for the auth'd user. Also
+  happens to return the fact in the response body. (But nobody wants to read cat
+  facts over HTTP. Just wait for it to arrive on your phone via SMS. Much
+  better.)
 
 ## TODOs
 

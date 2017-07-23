@@ -174,11 +174,15 @@ class App extends Component {
     console.log(response);
   }
 
+  // Callback for when we've auth'd via Google.
+  // Send the token to the back-end to find out if this user was already
+  // registered.
   handleGoogleSuccess(googleUser) {
     this.setState({googleUser: googleUser});
     this.fetchCatFactsUser();
   }
 
+  // This is what it's all about, baby. Pure, unadulterated cat fact madness.
   handleSendFact() {
     if (!this.state.catFactsUser) {
       console.log('Got handleSendFact too early');
@@ -199,6 +203,10 @@ class App extends Component {
     });
   }
 
+  // Use the /api/me endpoint to see if we have a user associated with the
+  // Auth'd google user. If we do, set the state to READY (so we can get
+  // straight down to busines), if not set it to NEED_REGISTER so the user can
+  // enter there phone number.
   fetchCatFactsUser() {
     this.setState({machineState: appStates.FETCHING_USER});
     fetch('/api/me', {
