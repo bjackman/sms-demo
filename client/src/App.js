@@ -79,6 +79,8 @@ class PhoneSubmitter extends Component {
       console.log(response);
       // TODO: Check response.ok!
       this.setState({machineState: machineStates.REGISTRATION_SUCCESSFUL});
+      if (this.props.onCompleted)
+        this.props.onCompleted();
     });
     this.setState({machineState: machineStates.REGISTRATION_REQUESTED});
   }
@@ -144,10 +146,14 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {googleUser: null};
+    this.state = {
+      googleUser: null,
+      catFactsUser: null
+    };
 
     this.handleGoogleSuccess = this.handleGoogleSuccess.bind(this);
     this.handleGoogleFailure = this.handleGoogleFailure.bind(this);
+    this.fetchCatFactsUser = this.fetchCatFactsUser.bind(this);
   }
 
   handleGoogleFailure(response) {
@@ -160,6 +166,10 @@ class App extends Component {
 
   handleGoogleSuccess(googleUser) {
     this.setState({googleUser: googleUser});
+    this.fetchCatFactsUser();
+  }
+
+  fetchCatFactsUser() {
     fetch('/api/me', {
       method: 'GET',
       headers: {
@@ -168,7 +178,10 @@ class App extends Component {
       }
     }).then((response) => {
       response.text().then((text) => {
-        this.setState(JSON.parse(text));
+        if (response.ok)
+          this.setState({catFactsUser: JSON.parse(text)});
+        else
+          console.log('Failed to fetch Cat Facts user');
       })
     });
   }
@@ -176,15 +189,29 @@ class App extends Component {
   render() {
     let component;
 
-    if (this.state.googleUser)
-      component = <PhoneSubmitter googleUser={this.state.googleUser}/>;
+    if (this.state.catFactsUser)
+      component = (
+        <RaisedButton primary={true}
+                      onTouchTap={this.handleSendFact}
+                      label='Send me a cat fact!' />
+      );
+    else if (this.state.googleUser)
+      component = (
+          <div className='register-user'>
+            <p>Enter your phone number to register for cat facts!</p>
+              <PhoneSubmitter googleUser={this.state.googleUser}
+                              onCompleted={this.fetchCatFactsUser}/>
+          </div>
+      );
     else
       component = (
-        <GoogleLogin
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText="Login with Google"
-            onSuccess={this.handleGoogleSuccess}
-            onFailure={this.handleGoogleFailure} />
+        <div classname='request-google-auth'>
+          <GoogleLogin
+              clientId={GOOGLE_CLIENT_ID}
+              buttonText="Login with Google"
+              onSuccess={this.handleGoogleSuccess}
+              onFailure={this.handleGoogleFailure} />
+        </div>
       );
 
     return (
