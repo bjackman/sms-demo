@@ -142,11 +142,20 @@ class PhoneSubmitter extends Component {
   }
 }
 
+// State machine states for the overall app
+const appStates = {
+  NO_USER: 0,       // Haven't authed with Google yet
+  FETCHING_USER: 1, // Waiting for CatFacts user
+  NEED_REGISTER: 2, // Have Google auth but no CatFacts number
+  READY: 3          // Ready to rumble, it's cat fact time
+};
+
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      machineState: appStates.NO_USER,
       googleUser: null,
       catFactsUser: null
     };
@@ -191,6 +200,7 @@ class App extends Component {
   }
 
   fetchCatFactsUser() {
+    this.setState({machineState: appStates.FETCHING_USER});
     fetch('/api/me', {
       method: 'GET',
       headers: {
@@ -200,9 +210,12 @@ class App extends Component {
     }).then((response) => {
       response.text().then((text) => {
         if (response.ok)
-          this.setState({catFactsUser: JSON.parse(text)});
+          this.setState({
+            catFactsUser: JSON.parse(text),
+            machineState: appStates.READY
+          });
         else
-          console.log('Failed to fetch Cat Facts user');
+          this.setState({machineState: appStates.NEED_REGISTER});
       })
     });
   }
@@ -210,21 +223,8 @@ class App extends Component {
   render() {
     let component;
 
-    if (this.state.catFactsUser)
-      component = (
-        <RaisedButton primary={true}
-                      onTouchTap={this.handleSendFact}
-                      label='Send me a cat fact!' />
-      );
-    else if (this.state.googleUser)
-      component = (
-          <div className='register-user'>
-            <p>Enter your phone number to register for cat facts!</p>
-              <PhoneSubmitter googleUser={this.state.googleUser}
-                              onCompleted={this.fetchCatFactsUser}/>
-          </div>
-      );
-    else
+    switch (this.state.machineState) {
+    case appStates.NO_USER:
       component = (
         <div classname='request-google-auth'>
           <GoogleLogin
@@ -234,6 +234,29 @@ class App extends Component {
               onFailure={this.handleGoogleFailure} />
         </div>
       );
+      break;
+    case appStates.FETCHING_USER:
+      component = <CircularProgress />
+      break;
+    case appStates.NEED_REGISTER:
+      component = (
+          <div className='register-user'>
+            <p>Enter your phone number to register for cat facts!</p>
+              <PhoneSubmitter googleUser={this.state.googleUser}
+                              onCompleted={this.fetchCatFactsUser}/>
+          </div>
+      );
+      break;
+    case appStates.READY:
+    if (this.state.catFactsUser)
+      component = (
+        <RaisedButton primary={true}
+                      onTouchTap={this.handleSendFact}
+                      label='Send me a cat fact!' />
+      );
+      break;
+    default: console.log('Critical error in app render');
+    }
 
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
