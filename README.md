@@ -71,13 +71,15 @@ To deploy it to App Engine (takes 10/15 mins):
 
 ## Design
 
-The front-end is a single-page app implemented as a big state machine. Not much
-to say except what's in the code comments.
+The front-end is a single-page app implemented as a big state machine. It starts
+by getting a Google auth token. Next it provides a phone-number input field
+which, when submitted, makes a registration request to the back-end API.
 
 The back-end is a "Rest API" (?) with a single endoint,
 /api/registerPhoneNumber. When you POST that endpoint with a body like
-`{phoneNumber: foo}`, a confirmation text is sent to `foo`. All the other
-details than the phone number (like the locale) are hard-coded.
+`{phoneNumber: foo, googleIdToken: bar}`, the google ID token (which should be a
+standard JWT) is validated and a confirmation text is sent to `foo`. All the
+other details than the phone number (like the locale) are hard-coded.
 
 ## TODOs
 

@@ -1,8 +1,10 @@
 'use strict';
 
+const util = require('util');
 const express = require('express');
 const twilio = require('twilio');
 const bodyParser = require('body-parser');
+const GoogleAuth = require('google-auth-library');
 
 const app = express();
 
@@ -20,6 +22,7 @@ const twilioClient = new twilio(
 console.log('Twilio client setup done.');
 
 function sendSms(number, body, callback) {
+  console.log('Sending SMS to ' + number)
   twilioClient.messages.create({
     to: number,
     // TODO: Using a fixed source number won't scale, because apparently if
@@ -28,6 +31,28 @@ function sendSms(number, body, callback) {
     from: process.env.TWILIO_SOURCE_NUMBER,
     body: body
   }).then((result) => callback(result));
+}
+
+console.log('Setting up Google authentication client');
+var auth = new GoogleAuth;
+const GOOGLE_CLIENT_ID="28748073213-ue32s6jvqdctoks3pib0gpitd9sjumgi.apps.googleusercontent.com"
+var googleClient = new auth.OAuth2(GOOGLE_CLIENT_ID, '', '');
+console.log('Google authentication client setup done');
+
+// Verify the Google auth JWT, then call callback with the Google user ID as a
+// parameter.
+function verifyGoogleIdToken(token, callback) {
+  googleClient.verifyIdToken(
+    token,
+    GOOGLE_CLIENT_ID,
+    function(e, login) {
+      var payload = login.getPayload();
+      var userId = payload['sub'];
+      // TODO - not going to test this with invalid tokens so not including
+      // proper handling of failed validation. Just use the presence of a
+      // returned userId as an indication of success.
+      callback(userId)
+    });
 }
 
 app.use(bodyParser.json());
@@ -39,15 +64,31 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.post('/api/registerPhoneNumber', (req, res) => {
-  console.log('request!');
+  var googleIdToken, phoneNumber;
+
+  // Validate request.
+  // If this validation becomes nontrivial, something like
+  // object-schma-validation might be helpful.
+  ({phoneNumber, googleIdToken} = req.body);
+  if (!phoneNumber || !googleIdToken) {
+    res.status(400).send('Invalid params').end();
+    return;
+  }
+
+  console.log(util.format('Number reg request token [%s] number [%s]',
+                          googleIdToken, phoneNumber));
+
   const params = req.body;
   const msg = 'Thanks for subscribing to cat facts!'
 
-  sendSms(params.phoneNumber, msg, (result) => {
-    console.log(result);
-    res.status(200).send(result.sid).end();
+  verifyGoogleIdToken(googleIdToken, function(userId) {
+    if (!userId)
+      res.status(500).send("Couldn't get Google User ID").end();
+    else
+      sendSms(phoneNumber, msg, (result) => {
+        res.status(200).send(result.sid).end();
+      });
   });
-
 });
 
 const PORT = process.env.PORT || 8080;

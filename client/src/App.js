@@ -33,10 +33,15 @@ const machineStates = {
 // AFAICT it's OK to hard-code this in the client
 const GOOGLE_CLIENT_ID="28748073213-ue32s6jvqdctoks3pib0gpitd9sjumgi.apps.googleusercontent.com"
 
+// Component to read a phone number from the user and send it to the back-end.
+// Required props:
+//   {googleUser: <GoogleUser object returned by GoogleLogin component>}
 class PhoneSubmitter extends Component {
   constructor(props) {
 
     super(props);
+
+    // TODO: Validate props? react-prop-schema?
 
     this.state = {
       phoneNumber: '',
@@ -63,7 +68,10 @@ class PhoneSubmitter extends Component {
   handleSubmit(event) {
     fetch('/api/registerPhoneNumber', {
       method: 'POST',
-      body: JSON.stringify(this.state),
+      body: JSON.stringify({
+        googleIdToken: this.props.googleUser.tokenId,
+        phoneNumber: this.state.phoneNumber
+      }),
       headers: {
         "Content-Type": "application/json"
       }
@@ -158,7 +166,7 @@ class App extends Component {
     let component;
 
     if (this.state.googleUser)
-      component = <PhoneSubmitter />;
+      component = <PhoneSubmitter googleUser={this.state.googleUser}/>;
     else
       component = (
         <GoogleLogin

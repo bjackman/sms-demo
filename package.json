@@ -19,7 +19,8 @@
   "dependencies": {
     "express": "4.15.3",
     "twilio": "3.5.0",
-    "body-parser": "1.17.2"
+    "body-parser": "1.17.2",
+    "googleapis": "20.1.0"
   },
   "devDependencies": {
     "@google-cloud/nodejs-repo-tools": "1.4.15",
