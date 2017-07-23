@@ -160,6 +160,17 @@ class App extends Component {
 
   handleGoogleSuccess(googleUser) {
     this.setState({googleUser: googleUser});
+    fetch('/api/me', {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + this.state.googleUser.tokenId
+      }
+    }).then((response) => {
+      response.text().then((text) => {
+        this.setState(JSON.parse(text));
+      })
+    });
   }
 
   render() {
