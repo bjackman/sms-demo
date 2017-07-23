@@ -1,5 +1,8 @@
 # Demo of a Node.js app that interacts by SMS
 
+This app lets you log in with Google, register a phone number, and then click a
+button to receive fascinating feline trivia via SMS.
+
 ## Approach
 
 ### Tech
@@ -13,6 +16,13 @@ Platform: Have used Apache OpenShift before, I think it would have been suitable
 but wanted to get broader experience by trying something else. Glanced at AWS -
 Lambda seemed too high-level, a raw EC2 instance seemed too low-level. Chose
 Google App Engine. Likely I didn't fully understand the AWS usage model.
+
+Storage: Using the Google Cloud Data Storage server. This is just because it
+looked like the easiest thing to set up. This would be a bad idea in the long
+term as as far as I can tell it totally locks you into the Google platform.
+
+Authentication is also handled totally via Google. This app's notion of a 'user'
+is just a tuple tying a phone number to a Google user ID.
 
 ### Learning Resources
 
@@ -79,11 +89,26 @@ The front-end is a single-page app implemented as a big state machine. It starts
 by getting a Google auth token. Next it provides a phone-number input field
 which, when submitted, makes a registration request to the back-end API.
 
-The back-end is a "Rest API" (?) with a single endoint,
-/api/registerPhoneNumber. When you POST that endpoint with a body like
-`{phoneNumber: foo, googleIdToken: bar}`, the google ID token (which should be a
-standard JWT) is validated and a confirmation text is sent to `foo`. All the
-other details than the phone number (like the locale) are hard-coded.
+### API
+
+There are three endpoints:
+
+- POST to /api/registerPhoneNumber. Body must be JSON like `{phoneNumber: foo,
+  googleIdToken: bar}`. The Google ID token (which should be a standard JWT) is
+  validated and a confirmation text is sent to `foo`. All the other details than
+  the phone number (like the locale) are hard-coded. The Google User ID
+  assocated with the token is then stored in the database along with the
+  registered phone number.
+
+  Once you're registered, for subsequent requests you'll need to set an
+  Authorization header to "Bearer <token>" where <token> is the Google ID token.
+
+- GET /api/me. Returns {googleUserId: foo, phoneNumber: bar}
+
+- POST to /api/sendFact. Sends a cat fact to the registered SMS number for the
+  auth'd user. Also happens to return the fact in the response body. (But nobody
+  wants to read cat facts over HTTP. Just wait for it to arrive on your
+  phone via SMS. Much better.)
 
 ## TODOs
 
