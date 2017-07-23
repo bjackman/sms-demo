@@ -15,6 +15,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
+import GoogleLogin from 'react-google-login';
+
 // Needed for material-ui's onTouchTap
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
@@ -27,6 +29,9 @@ const machineStates = {
   REGISTRATION_REQUESTED: 1,    // Waiting for response from backend
   REGISTRATION_SUCCESSFUL: 2    // Finished
 };
+
+// AFAICT it's OK to hard-code this in the client
+const GOOGLE_CLIENT_ID="28748073213-ue32s6jvqdctoks3pib0gpitd9sjumgi.apps.googleusercontent.com"
 
 class PhoneSubmitter extends Component {
   constructor(props) {
@@ -126,14 +131,50 @@ class PhoneSubmitter extends Component {
   }
 }
 
-function App(props) {
-  return (
-    <MuiThemeProvider muiTheme={muiTheme}>
-      <div className="App">
-        <PhoneSubmitter />
-      </div>
-    </MuiThemeProvider>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {googleUser: null};
+
+    this.handleGoogleSuccess = this.handleGoogleSuccess.bind(this);
+    this.handleGoogleFailure = this.handleGoogleFailure.bind(this);
+  }
+
+  handleGoogleFailure(response) {
+    // TODO: Should figure out whether this failed for a reason the user knows
+    // about (in which case we can just do nothing), or whether we need to
+    // display an error message.
+    console.log('Failed to log in with Google');
+    console.log(response);
+  }
+
+  handleGoogleSuccess(googleUser) {
+    this.setState({googleUser: googleUser});
+  }
+
+  render() {
+    let component;
+
+    if (this.state.googleUser)
+      component = <PhoneSubmitter />;
+    else
+      component = (
+        <GoogleLogin
+            clientId={GOOGLE_CLIENT_ID}
+            buttonText="Login with Google"
+            onSuccess={this.handleGoogleSuccess}
+            onFailure={this.handleGoogleFailure} />
+      );
+
+    return (
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <div className="App">
+          {component}
+        </div>
+      </MuiThemeProvider>
+    );
+  }
 }
 
 export default App;
