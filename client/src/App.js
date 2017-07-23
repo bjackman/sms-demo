@@ -220,6 +220,12 @@ class App extends Component {
     });
   }
 
+  // Set tab title
+  componentDidMount() {
+    console.log('mount');
+    document.title = 'Cat Facts!';
+  }
+
   render() {
     let component;
 
