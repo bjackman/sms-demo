@@ -6,14 +6,14 @@ import Phone from 'react-phone-number-input'
 import 'react-phone-number-input/rrui.css';
 import 'react-phone-number-input/style.css';
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
+import {isValidNumber, format as formatNumber} from 'libphonenumber-js';
+
 
 import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
-import {isValidNumber, format as formatNumber} from 'libphonenumber-js';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Needed for material-ui's onTouchTap
 // http://stackoverflow.com/a/34015469/988941
