@@ -10,6 +10,11 @@ const Datastore = require('@google-cloud/datastore');
 const app = express();
 
 const datastore = Datastore();
+
+/*
+ * Twilio stuff
+ */
+
 // Only supprt UK phone numbers at the moment
 const LOCALE = 'GB';
 
@@ -35,6 +40,10 @@ function sendSms(number, body, callback) {
   }).then((result) => callback(result));
 }
 
+/*
+ * Google auth stuff
+ */
+
 console.log('Setting up Google authentication client');
 var auth = new GoogleAuth;
 const GOOGLE_CLIENT_ID="28748073213-ue32s6jvqdctoks3pib0gpitd9sjumgi.apps.googleusercontent.com"
@@ -56,6 +65,10 @@ function verifyGoogleIdToken(token, callback) {
       callback(userId)
     });
 }
+
+/*
+ * Data store stuff
+ */
 
 // Query the data store for a phone number, call th callback with the phone
 // number or null if it wasn't found.
@@ -109,6 +122,11 @@ function setUserPhoneNumber(googleUserId, phoneNumber) {
       console.error('STORE ERROR:', err);
     });
 }
+
+/*
+ * API stuff
+ */
+
 app.use(bodyParser.json());
 
 // In dev the client is compiled and served by webpack-dev-server. In prod, it's
