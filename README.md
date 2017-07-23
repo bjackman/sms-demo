@@ -46,6 +46,11 @@ included before the app is started. Put this in there:
     export TWILIO_AUTH_TOKEN=<Twilio token>
     export TWILIO_SOURCE_NUMBER=<Twilio phone number>
 
+Then set up the `gcloud` SDK tool. This is needed for deployment and also to
+make the storage engine Just Work. You can configure this to work with a local
+dummy storage engine, in which case you can skip the `gcloud` set up, but I
+haven't tried it.
+
 Then,
 
 - `vagrant up`
@@ -65,7 +70,6 @@ client; npm start)' in another.
 
 To deploy it to App Engine (takes 10/15 mins):
 
-- Set up the `gcloud` SDK tool
 - Compile the React App into a prod version with `(cd client; npm run build)`
 - `npm run deploy`
 

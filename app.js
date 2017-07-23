@@ -5,9 +5,11 @@ const express = require('express');
 const twilio = require('twilio');
 const bodyParser = require('body-parser');
 const GoogleAuth = require('google-auth-library');
+const Datastore = require('@google-cloud/datastore');
 
 const app = express();
 
+const datastore = Datastore();
 // Only supprt UK phone numbers at the moment
 const LOCALE = 'GB';
 
@@ -55,6 +57,58 @@ function verifyGoogleIdToken(token, callback) {
     });
 }
 
+// Query the data store for a phone number, call th callback with the phone
+// number or null if it wasn't found.
+// TODO: Assumes that we haven't messed up the DB by storing two entities
+//       with hte same googleUserId.  Presumably the DB tech has a way to make
+//       that impossible (use googleUserId a key?). Should do that. Would
+//       probably result in a faster index too.
+function getUserPhoneNumber(googleUserId, callback) {
+  const query = datastore.createQuery('User')
+                    .filter('googleUserId', '=', googleUserId);
+
+  console.log('Querying datastore for googleUserId ' + googleUserId);
+
+  datastore.runQuery(query)
+    .then((results) => {
+      const users = results[0];
+
+      console.log('Query results for googleUserId ' + googleUserId);
+      console.log(results)
+
+      if (users && users.length)
+        callback(users[0].phoneNumber);
+      else
+        callback(null)
+    })
+    .catch((err) => {
+      console.error('QUERY ERROR:', err);
+    });
+}
+
+// Store a new user in the data store. Fire and forget :/
+function setUserPhoneNumber(googleUserId, phoneNumber) {
+  const key = datastore.key('User');
+  const entity = {
+    key: key,
+    data: [
+      {name: 'googleUserId', value: googleUserId},
+      {name: 'phoneNumber', value: phoneNumber}
+    ]
+  };
+
+  console.log(util.format('Storing user [%s] with number [%s]',
+                          googleUserId, phoneNumber));
+
+  datastore.save(entity)
+    .then(() => {
+      console.log(util.format('Successfully stored user [%s] with number [%s]',
+                              googleUserId, phoneNumber));
+    })
+    .catch((err) => {
+      console.error('STORE ERROR:', err);
+    });
+}
 app.use(bodyParser.json());
 
 // In dev the client is compiled and served by webpack-dev-server. In prod, it's
