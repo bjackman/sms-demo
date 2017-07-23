@@ -24,7 +24,7 @@ injectTapEventPlugin();
 const muiTheme = getMuiTheme();
 
 // Pseudo-enum used for a state machine in the PhoneSubmitter component
-const machineStates = {
+const submitterStates = {
   NEED_NUMBER: 0,               // Waiting for user to give valid number
   REGISTRATION_REQUESTED: 1,    // Waiting for response from backend
   REGISTRATION_SUCCESSFUL: 2    // Finished
@@ -46,7 +46,7 @@ class PhoneSubmitter extends Component {
     this.state = {
       phoneNumber: '',
       country: 'GB',
-      machineState: machineStates.NEED_NUMBER
+      machineState: submitterStates.NEED_NUMBER
     }
 
     this.handleChangeNumber = this.handleChangeNumber.bind(this);
@@ -78,11 +78,11 @@ class PhoneSubmitter extends Component {
     }).then((response) => {
       console.log(response);
       // TODO: Check response.ok!
-      this.setState({machineState: machineStates.REGISTRATION_SUCCESSFUL});
+      this.setState({machineState: submitterStates.REGISTRATION_SUCCESSFUL});
       if (this.props.onCompleted)
         this.props.onCompleted();
     });
-    this.setState({machineState: machineStates.REGISTRATION_REQUESTED});
+    this.setState({machineState: submitterStates.REGISTRATION_REQUESTED});
   }
 
   render() {
@@ -106,7 +106,7 @@ class PhoneSubmitter extends Component {
     // NB: the onCountryChange prop below doesn't seem to be documented, but I
     // found it in the source code for the component :/
     switch (this.state.machineState) {
-    case machineStates.NEED_NUMBER:
+    case submitterStates.NEED_NUMBER:
       return (
         <div className="PhoneSubmitter">
           <Phone
@@ -125,13 +125,13 @@ class PhoneSubmitter extends Component {
                         label={buttonText} />
         </div>
       );
-    case machineStates.REGISTRATION_REQUESTED:
+    case submitterStates.REGISTRATION_REQUESTED:
       return (
         <div className="PhoneSubmitter">
           <CircularProgress />
         </div>
       );
-    case machineStates.REGISTRATION_SUCCESSFUL:
+    case submitterStates.REGISTRATION_SUCCESSFUL:
       return (
         <div className="PhoneSubmitter">
           <p>DONE</p>
