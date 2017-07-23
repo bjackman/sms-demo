@@ -69,6 +69,7 @@ class PhoneSubmitter extends Component {
       }
     }).then((response) => {
       console.log(response);
+      // TODO: Check response.ok!
       this.setState({machineState: machineStates.REGISTRATION_SUCCESSFUL});
     });
     this.setState({machineState: machineStates.REGISTRATION_REQUESTED});
