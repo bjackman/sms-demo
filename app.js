@@ -110,17 +110,25 @@ function setUserPhoneNumber(googleUserId, phoneNumber) {
     ]
   };
 
-  console.log(util.format('Storing user [%s] with number [%s]',
-                          googleUserId, phoneNumber));
-
-  datastore.save(entity)
-    .then(() => {
-      console.log(util.format('Successfully stored user [%s] with number [%s]',
+  // Check that this user isn't already registered.
+  // TODO: As mentioned above, can surely just let the DB do this for us.
+  getUserPhoneNumber(googleUserId, ((phoneNumber) => {
+    if (phoneNumber) {
+      console.log(util.format('User [%s] already stored', googleUserId));
+    } else {
+      console.log(util.format('Storing user [%s] with number [%s]',
                               googleUserId, phoneNumber));
-    })
-    .catch((err) => {
-      console.error('STORE ERROR:', err);
-    });
+
+      datastore.save(entity)
+        .then(() => {
+          console.log(util.format('Successfully stored user [%s] with number [%s]',
+                                  googleUserId, phoneNumber));
+        })
+        .catch((err) => {
+          console.error('STORE ERROR:', err);
+        });
+    }
+  }));
 }
 
 /*
